@@ -233,7 +233,8 @@ body {
 /* Chat Messages */
 .chat-messages {
     padding: 20px 0;
-    min-height: 200px;
+    height: calc(100vh - 200px);
+    overflow-y: auto;
 }
 
 .message {
