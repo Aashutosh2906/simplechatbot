@@ -216,14 +216,6 @@ function animateNeuralNetwork() {
     animationId = requestAnimationFrame(animateNeuralNetwork);
 }
 
-// Add welcome message
-function addWelcomeMessage() {
-    setTimeout(() => {
-        const welcomeMsg = "Welcome to DVNC.AI. I embody Leonardo da Vinci's polymathic approach to problem-solving. Share any complex challenge, and I'll help you explore it through the lens of systems thinking and cross-domain innovation. What paradigm shall we challenge today?";
-        addMessage(welcomeMsg, 'bot', true);
-    }, 800);
-}
-
 // Send message
 async function sendMessage() {
     const message = elements.messageInput.value.trim();
