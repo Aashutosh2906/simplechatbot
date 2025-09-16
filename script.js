@@ -135,7 +135,7 @@ function setupEventListeners() {
     });
 }
 
-// Initialize Liquid Canvas with Metaballs
+// Initialize Liquid Canvas with Professional Neural Network
 function initLiquidCanvas() {
     canvas = document.getElementById('liquidCanvas');
     if (!canvas) return;
@@ -144,15 +144,16 @@ function initLiquidCanvas() {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
     
-    // Create metaballs
+    // Create neural network nodes
     for (let i = 0; i < CONFIG.liquidParticles; i++) {
         metaballs.push({
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
-            vx: (Math.random() - 0.5) * 0.3,
-            vy: (Math.random() - 0.5) * 0.3,
-            radius: Math.random() * 30 + 20,
-            hue: Math.random() * 60 + 180 // Blue to purple range
+            vx: (Math.random() - 0.5) * 0.2,
+            vy: (Math.random() - 0.5) * 0.2,
+            radius: Math.random() * 4 + 2, // Smaller, more professional nodes
+            hue: 240, // Professional blue tone
+            connections: []
         });
     }
     
@@ -165,15 +166,18 @@ function resizeCanvas() {
     canvas.height = window.innerHeight;
 }
 
-// Liquid Metaball Animation
+// Professional Neural Network Animation
 function animateLiquidBackground() {
     if (!ctx || !canvas) return;
     
-    // Clear with fade effect
-    ctx.fillStyle = 'rgba(0, 5, 17, 0.05)';
+    // Clear with very subtle fade
+    ctx.fillStyle = 'rgba(250, 251, 252, 0.95)'; // Light mode background
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.95)'; // Dark mode background
+    }
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Update metaballs
+    // Update metaballs with slower, more professional movement
     metaballs.forEach(ball => {
         // Update position with viscosity
         ball.vx *= CONFIG.viscosity;
@@ -182,63 +186,52 @@ function animateLiquidBackground() {
         ball.x += ball.vx;
         ball.y += ball.vy;
         
-        // Surface tension at boundaries
+        // Gentle boundary collision
         if (ball.x < ball.radius || ball.x > canvas.width - ball.radius) {
-            ball.vx *= -1;
+            ball.vx *= -0.8;
             ball.x = Math.max(ball.radius, Math.min(canvas.width - ball.radius, ball.x));
         }
         if (ball.y < ball.radius || ball.y > canvas.height - ball.radius) {
-            ball.vy *= -1;
+            ball.vy *= -0.8;
             ball.y = Math.max(ball.radius, Math.min(canvas.height - ball.radius, ball.y));
         }
         
-        // Apply random flow
-        ball.vx += (Math.random() - 0.5) * CONFIG.tension;
-        ball.vy += (Math.random() - 0.5) * CONFIG.tension;
+        // Very subtle random flow
+        ball.vx += (Math.random() - 0.5) * 0.01;
+        ball.vy += (Math.random() - 0.5) * 0.01;
         
-        // Limit velocity
+        // Limit velocity for professional feel
         const speed = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy);
-        if (speed > 2) {
-            ball.vx = (ball.vx / speed) * 2;
-            ball.vy = (ball.vy / speed) * 2;
+        if (speed > 1) {
+            ball.vx = (ball.vx / speed) * 1;
+            ball.vy = (ball.vy / speed) * 1;
         }
     });
     
-    // Draw metaballs with goo effect
-    drawMetaballs();
+    // Draw professional neural network
+    drawNeuralNetwork();
     
     animationId = requestAnimationFrame(animateLiquidBackground);
 }
 
-function drawMetaballs() {
-    // Create gradient metaball effect with softer colors
+function drawNeuralNetwork() {
+    // Draw connections first (behind nodes)
     metaballs.forEach((ball, index) => {
-        const gradient = ctx.createRadialGradient(
-            ball.x, ball.y, 0,
-            ball.x, ball.y, ball.radius
-        );
-        
-        // Use softer, more readable colors
-        gradient.addColorStop(0, `hsla(${ball.hue}, 70%, 60%, 0.15)`);
-        gradient.addColorStop(0.5, `hsla(${ball.hue}, 60%, 50%, 0.08)`);
-        gradient.addColorStop(1, 'transparent');
-        
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // Connect nearby metaballs with softer lines
         metaballs.slice(index + 1).forEach(other => {
             const dx = other.x - ball.x;
             const dy = other.y - ball.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
-            if (distance < CONFIG.metaballRadius * 2) {
-                const opacity = (1 - distance / (CONFIG.metaballRadius * 2)) * 0.1;
+            if (distance < 150) { // Connection radius
+                const opacity = (1 - distance / 150) * 0.15; // Very subtle connections
                 
-                ctx.strokeStyle = `hsla(${(ball.hue + other.hue) / 2}, 60%, 50%, ${opacity})`;
-                ctx.lineWidth = opacity * 8;
+                // Gradient line for professional look
+                const gradient = ctx.createLinearGradient(ball.x, ball.y, other.x, other.y);
+                gradient.addColorStop(0, `rgba(99, 102, 241, ${opacity})`); // Indigo
+                gradient.addColorStop(1, `rgba(129, 140, 248, ${opacity})`); // Light indigo
+                
+                ctx.strokeStyle = gradient;
+                ctx.lineWidth = 0.5;
                 ctx.beginPath();
                 ctx.moveTo(ball.x, ball.y);
                 ctx.lineTo(other.x, other.y);
@@ -246,7 +239,57 @@ function drawMetaballs() {
             }
         });
     });
+    
+    // Draw nodes with professional styling
+    metaballs.forEach(ball => {
+        // Outer glow
+        const glowGradient = ctx.createRadialGradient(
+            ball.x, ball.y, 0,
+            ball.x, ball.y, ball.radius * 3
+        );
+        glowGradient.addColorStop(0, 'rgba(99, 102, 241, 0.2)');
+        glowGradient.addColorStop(1, 'transparent');
+        
+        ctx.fillStyle = glowGradient;
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, ball.radius * 3, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Node core
+        ctx.fillStyle = 'rgba(99, 102, 241, 0.6)';
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Node border for clarity
+        ctx.strokeStyle = 'rgba(99, 102, 241, 0.8)';
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+        ctx.stroke();
+    });
 }
+
+// Update mouse interaction for professional feel
+document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    
+    // Subtle attraction to mouse for professional interactivity
+    if (canvas) {
+        metaballs.forEach(ball => {
+            const dx = ball.x - mouseX;
+            const dy = ball.y - mouseY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < CONFIG.mouseInfluence) {
+                const force = (1 - distance / CONFIG.mouseInfluence) * 0.1; // Very subtle
+                ball.vx += (dx / distance) * force;
+                ball.vy += (dy / distance) * force;
+            }
+        });
+    }
+});
 
 // Liquid UI Animations
 function animateLiquidUI() {
