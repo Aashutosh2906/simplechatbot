@@ -1,17 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simple Chatbot</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leonardo - Renaissance AI Assistant</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="chat-container">
-    <div id="chat-box"></div>
-    <input id="user-input" type="text" placeholder="Type a message..." />
-    <button onclick="sendMessage()">Send</button>
-  </div>
-  <script src="script.js"></script>
+    <!-- Vitruvian Background Animation -->
+    <div class="vitruvian-bg">
+        <div class="vitruvian-circle"></div>
+        <div class="vitruvian-circle"></div>
+        <div class="vitruvian-circle"></div>
+    </div>
+
+    <!-- Floating Annotations -->
+    <div class="annotations-container"></div>
+
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <div class="nav-content">
+            <a href="#" class="logo">LEONARDO</a>
+            <div class="nav-status">
+                <span class="status-dot"></span>
+                <span class="status-text">Divine Connection</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Chat Container -->
+    <div class="chat-container">
+        <!-- Welcome Section -->
+        <div class="welcome-section" id="welcomeSection">
+            <h1 class="welcome-title">The Renaissance of Digital Conversation</h1>
+            <p class="welcome-subtitle">"Simplicity is the ultimate sophistication"</p>
+            <p class="welcome-description">
+                Experience dialogue through the lens of Leonardo da Vinci's genius. 
+                Every response crafted with the golden ratio of wisdom and innovation.
+            </p>
+            <div class="golden-ratio-indicator">
+                <span class="phi-symbol">φ</span>
+                <span class="phi-value">1.618033988...</span>
+            </div>
+        </div>
+
+        <!-- Chat Messages Area -->
+        <div class="chat-messages" id="chatMessages">
+            <!-- Messages will be dynamically added here -->
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator" style="display: none;">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <span class="typing-text">Leonardo is contemplating...</span>
+        </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-container">
+        <div class="input-wrapper">
+            <div class="sketch-decoration left">
+                <svg viewBox="0 0 50 50">
+                    <circle cx="25" cy="25" r="20" stroke="currentColor" fill="none" opacity="0.3"/>
+                    <rect x="15" y="15" width="20" height="20" stroke="currentColor" fill="none" opacity="0.2"/>
+                </svg>
+            </div>
+            
+            <input 
+                type="text" 
+                id="messageInput" 
+                class="message-input" 
+                placeholder="Compose your thoughts with Renaissance elegance..."
+                autocomplete="off"
+            >
+            
+            <button id="sendButton" class="send-button" aria-label="Send Message">
+                <svg class="send-icon" viewBox="0 0 24 24" fill="none">
+                    <path d="M2 12L22 2L15 22L11 13L2 12Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                </svg>
+                <span class="send-ripple"></span>
+            </button>
+            
+            <div class="sketch-decoration right">
+                <svg viewBox="0 0 50 50">
+                    <path d="M25 5 L45 25 L25 45 L5 25 Z" stroke="currentColor" fill="none" opacity="0.3"/>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <button class="quick-action" data-message="Tell me about the golden ratio">
+                <span class="action-icon">φ</span>
+                <span class="action-text">Golden Ratio</span>
+            </button>
+            <button class="quick-action" data-message="Explain something with da Vinci's wisdom">
+                <span class="action-icon">🎨</span>
+                <span class="action-text">Renaissance Wisdom</span>
+            </button>
+            <button class="quick-action" data-message="Show me the beauty in mathematics">
+                <span class="action-icon">📐</span>
+                <span class="action-text">Sacred Geometry</span>
+            </button>
+            <button class="quick-action" data-message="Inspire me with innovation">
+                <span class="action-icon">✨</span>
+                <span class="action-text">Innovation</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Feature Cards (Hidden by default, shown on command) -->
+    <div class="features-overlay" id="featuresOverlay" style="display: none;">
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>Vitruvian Principles</h3>
+                <p>Human-centered design placing you at the heart of every interaction</p>
+            </div>
+            <div class="feature-card">
+                <h3>Divine Proportion</h3>
+                <p>Every element follows the mathematical beauty of nature</p>
+            </div>
+            <div class="feature-card">
+                <h3>Eternal Innovation</h3>
+                <p>Timeless wisdom merged with cutting-edge technology</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
