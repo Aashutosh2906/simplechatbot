@@ -211,15 +211,16 @@ function animateLiquidBackground() {
 }
 
 function drawMetaballs() {
-    // Create gradient metaball effect
+    // Create gradient metaball effect with softer colors
     metaballs.forEach((ball, index) => {
         const gradient = ctx.createRadialGradient(
             ball.x, ball.y, 0,
             ball.x, ball.y, ball.radius
         );
         
-        gradient.addColorStop(0, `hsla(${ball.hue}, 100%, 60%, 0.4)`);
-        gradient.addColorStop(0.5, `hsla(${ball.hue}, 100%, 50%, 0.2)`);
+        // Use softer, more readable colors
+        gradient.addColorStop(0, `hsla(${ball.hue}, 70%, 60%, 0.15)`);
+        gradient.addColorStop(0.5, `hsla(${ball.hue}, 60%, 50%, 0.08)`);
         gradient.addColorStop(1, 'transparent');
         
         ctx.fillStyle = gradient;
@@ -227,17 +228,17 @@ function drawMetaballs() {
         ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
         ctx.fill();
         
-        // Connect nearby metaballs
+        // Connect nearby metaballs with softer lines
         metaballs.slice(index + 1).forEach(other => {
             const dx = other.x - ball.x;
             const dy = other.y - ball.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
             if (distance < CONFIG.metaballRadius * 2) {
-                const opacity = (1 - distance / (CONFIG.metaballRadius * 2)) * 0.3;
+                const opacity = (1 - distance / (CONFIG.metaballRadius * 2)) * 0.1;
                 
-                ctx.strokeStyle = `hsla(${(ball.hue + other.hue) / 2}, 100%, 50%, ${opacity})`;
-                ctx.lineWidth = opacity * 10;
+                ctx.strokeStyle = `hsla(${(ball.hue + other.hue) / 2}, 60%, 50%, ${opacity})`;
+                ctx.lineWidth = opacity * 8;
                 ctx.beginPath();
                 ctx.moveTo(ball.x, ball.y);
                 ctx.lineTo(other.x, other.y);
