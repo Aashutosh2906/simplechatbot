@@ -332,25 +332,8 @@ function createRipple(element) {
 
 // Liquid Transition
 function liquidTransition(callback) {
-    const overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.inset = '0';
-    overlay.style.background = 'radial-gradient(circle at center, var(--liquid-primary), transparent)';
-    overlay.style.opacity = '0';
-    overlay.style.pointerEvents = 'none';
-    overlay.style.zIndex = '9999';
-    overlay.style.transition = 'opacity 0.3s ease-out';
-    
-    document.body.appendChild(overlay);
-    
-    requestAnimationFrame(() => {
-        overlay.style.opacity = '0.5';
-        setTimeout(() => {
-            callback();
-            overlay.style.opacity = '0';
-            setTimeout(() => overlay.remove(), 300);
-        }, 300);
-    });
+    // Simplified transition - just call the callback directly
+    if (callback) callback();
 }
 
 // Reset to Home
