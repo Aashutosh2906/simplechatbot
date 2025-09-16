@@ -58,8 +58,11 @@ function initializeElements() {
         welcomeSection: document.getElementById('welcomeSection'),
         quickActions: document.querySelectorAll('.liquid-quick'),
         logoHome: document.getElementById('logoHome'),
-        resetBtn: document.getElementById('resetBtn')
+        resetBtn: document.getElementById('resetBtn') // Make sure this is getting the button
     };
+    
+    // Debug log to check if button is found
+    console.log('Reset button found:', elements.resetBtn);
 }
 
 // Setup Event Listeners
