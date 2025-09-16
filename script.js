@@ -101,24 +101,6 @@ function setupEventListeners() {
         resetToHome();
     });
     
-    // Sidebar toggle
-    elements.menuToggle.addEventListener('click', () => {
-        elements.sidebar.classList.toggle('open');
-    });
-    
-    // Sidebar close
-    elements.sidebarClose.addEventListener('click', () => {
-        elements.sidebar.classList.remove('open');
-    });
-    
-    // Feature buttons
-    document.querySelectorAll('.feature-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const action = btn.getAttribute('data-action');
-            handleFeatureAction(action);
-        });
-    });
-    
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         // Cmd/Ctrl + K to focus input
@@ -127,128 +109,11 @@ function setupEventListeners() {
             elements.messageInput.focus();
         }
         
-        // Cmd/Ctrl + B to toggle sidebar
-        if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
-            e.preventDefault();
-            elements.sidebar.classList.toggle('open');
-        }
-        
         // Escape to go home
         if (e.key === 'Escape') {
-            if (elements.sidebar.classList.contains('open')) {
-                elements.sidebar.classList.remove('open');
-            } else {
-                resetToHome();
-            }
+            resetToHome();
         }
     });
-}
-
-// Chat History Management
-function loadChatHistory() {
-    const savedSessions = localStorage.getItem('dvnc_sessions');
-    if (savedSessions) {
-        chatSessions = JSON.parse(savedSessions);
-        updateHistoryDisplay();
-    }
-}
-
-function saveChatSession(message, sender) {
-    const session = chatSessions.find(s => s.id === currentSessionId);
-    if (session) {
-        session.messages.push({ message, sender, time: new Date().toISOString() });
-        session.lastUpdate = new Date().toISOString();
-    } else {
-        chatSessions.unshift({
-            id: currentSessionId,
-            title: message.substring(0, 50),
-            messages: [{ message, sender, time: new Date().toISOString() }],
-            lastUpdate: new Date().toISOString()
-        });
-    }
-    
-    // Keep only last 20 sessions
-    chatSessions = chatSessions.slice(0, 20);
-    localStorage.setItem('dvnc_sessions', JSON.stringify(chatSessions));
-    updateHistoryDisplay();
-}
-
-function updateHistoryDisplay() {
-    elements.chatHistory.innerHTML = '';
-    chatSessions.forEach(session => {
-        const historyItem = document.createElement('div');
-        historyItem.className = 'history-item';
-        historyItem.innerHTML = `
-            <div class="history-item-title">${session.title}</div>
-            <div class="history-item-date">${formatDate(session.lastUpdate)}</div>
-        `;
-        historyItem.addEventListener('click', () => loadSession(session.id));
-        elements.chatHistory.appendChild(historyItem);
-    });
-}
-
-function loadSession(sessionId) {
-    const session = chatSessions.find(s => s.id === sessionId);
-    if (session) {
-        currentSessionId = sessionId;
-        elements.chatMessages.innerHTML = '';
-        elements.welcomeSection.style.display = 'none';
-        
-        session.messages.forEach(msg => {
-            addMessage(msg.message, msg.sender, false);
-        });
-        
-        elements.sidebar.classList.remove('open');
-    }
-}
-
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = now - date;
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    
-    if (days === 0) return 'Today';
-    if (days === 1) return 'Yesterday';
-    if (days < 7) return `${days} days ago`;
-    return date.toLocaleDateString();
-}
-
-// Handle feature actions
-function handleFeatureAction(action) {
-    switch(action) {
-        case 'clear':
-            if (confirm('Clear all chat history?')) {
-                chatSessions = [];
-                localStorage.removeItem('dvnc_sessions');
-                updateHistoryDisplay();
-                resetToHome();
-            }
-            break;
-        case 'export':
-            exportChat();
-            break;
-        case 'theme':
-            alert('Theme settings coming soon!');
-            break;
-    }
-}
-
-function exportChat() {
-    const session = chatSessions.find(s => s.id === currentSessionId);
-    if (session) {
-        const text = session.messages.map(msg => 
-            `${msg.sender.toUpperCase()}: ${msg.message}`
-        ).join('\n\n');
-        
-        const blob = new Blob([text], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `dvnc-chat-${currentSessionId}.txt`;
-        a.click();
-        URL.revokeObjectURL(url);
-    }
 }
 
 // Reset to home screen
@@ -261,14 +126,6 @@ function resetToHome() {
     
     // Clear input
     elements.messageInput.value = '';
-    
-    // Create new session ID
-    currentSessionId = Date.now();
-    
-    // Add welcome message after a short delay
-    setTimeout(() => {
-        addWelcomeMessage();
-    }, 500);
 }
 
 // Neural Network Background
