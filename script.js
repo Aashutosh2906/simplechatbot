@@ -1,4 +1,29 @@
-// DVNC.AI - Neural Intelligence Chatbot Script
+// Send message
+async function sendMessage() {
+    const message = elements.messageInput.value.trim();
+    if (!message) return;
+    
+    // Hide welcome section
+    if (elements.welcomeSection.style.display !== 'none') {
+        elements.welcomeSection.style.display = 'none';
+    }
+    
+    // Add user message
+    addMessage(message, 'user');
+    
+    // Clear input
+    elements.messageInput.value = '';
+    
+    // Show typing indicator
+    showTypingIndicator();
+    
+    // Get response
+    setTimeout(async () => {
+        hideTypingIndicator();
+        const response = await getDVNCResponse(message);
+        addMessage(response, 'bot', true);
+    }, CONFIG.thinkingTime);
+}// DVNC.AI - Neural Intelligence Chatbot Script
 
 // Configuration
 const CONFIG = {
