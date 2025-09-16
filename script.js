@@ -10,35 +10,31 @@ const CONFIG = {
     connectionDistance: 150
 };
 
-// AI-themed responses
+// AI-themed responses based on DVNC.AI concept
 const DVNC_RESPONSES = [
     {
-        keywords: ['quantum', 'computing'],
-        response: "Quantum computing leverages quantum mechanical phenomena like superposition and entanglement to process information exponentially faster than classical computers. Instead of bits (0 or 1), quantum computers use qubits that can exist in multiple states simultaneously. This enables solving complex problems in cryptography, drug discovery, and optimization that would take classical computers millennia to solve."
+        keywords: ['systems', 'thinking', 'complex', 'problem'],
+        response: "Complex problems demand a systems-thinking approach. Leonardo understood that everything is interconnected - from the flow of water to the circulation of blood. In modern terms, we must break down silos between disciplines. Your challenge requires examining not just individual components but the relationships and feedback loops between them. What patterns do you observe across different domains?"
     },
     {
-        keywords: ['neural', 'network', 'networks'],
-        response: "Neural networks are computational models inspired by the human brain's structure. They consist of interconnected nodes (neurons) organized in layers that process and transform data. Through training on vast datasets, these networks learn to recognize patterns, make predictions, and solve complex problems. Modern deep learning architectures power everything from image recognition to natural language processing."
+        keywords: ['innovation', 'creative', 'idea'],
+        response: "True innovation emerges at the intersection of disciplines. Leonardo didn't separate art from science - he used anatomical studies to perfect his paintings and artistic observation to advance engineering. Consider approaching your challenge from an unexpected angle. What would happen if you applied principles from nature, art, or a completely different field to your problem?"
     },
     {
-        keywords: ['golden ratio', 'phi', '1.618'],
-        response: "The golden ratio (φ = 1.618...) is a mathematical constant that appears throughout nature and art. From the spiral of galaxies to the proportions of the human face, this ratio creates aesthetically pleasing and harmonious designs. In my neural architecture, I apply these principles to create balanced and intuitive interactions between human and artificial intelligence."
-    },
-    {
-        keywords: ['future', 'ai', 'artificial intelligence'],
-        response: "The future of AI extends beyond mere computation into genuine collaboration with human intelligence. We're moving toward systems that understand context, emotion, and nuance. Quantum-enhanced neural networks, neuromorphic computing, and bio-inspired algorithms will create AI that augments human creativity rather than replacing it. The convergence of these technologies will unlock solutions to humanity's greatest challenges."
+        keywords: ['leonardo', 'da vinci', 'renaissance'],
+        response: "Leonardo da Vinci represents the pinnacle of polymathic thinking - the 'uomo universale.' He saw no boundaries between art, science, engineering, and philosophy. His methodology involved systematic observation, cross-domain pattern recognition, and relentless experimentation. This same approach, enhanced by modern AI, can unlock solutions to 21st-century challenges that specialized thinking alone cannot solve."
     },
     {
         keywords: ['hello', 'hi', 'hey'],
-        response: "Hello! I'm DVNC.AI, a neural intelligence interface bridging Renaissance wisdom with modern AI. My architecture combines pattern recognition, natural language processing, and knowledge synthesis to assist you. What would you like to explore today?"
+        response: "Welcome! I am DVNC.AI - a 21st-century reimagination of Leonardo da Vinci's intelligence. Created by leading Leonardo experts and based on his voluminous manuscripts, I'm here to help you think differently about complex problems. How can I assist you in breaking through conventional thinking today?"
     },
     {
         keywords: ['who are you', 'what are you', 'dvnc'],
-        response: "I am DVNC.AI - a neural intelligence system inspired by Leonardo da Vinci's multidisciplinary genius. My architecture integrates advanced language models with principles from art, science, and mathematics. I process information through interconnected neural pathways, similar to how da Vinci connected diverse fields of knowledge to create revolutionary insights."
+        response: "I am DVNC.AI - an AI system that embodies Leonardo da Vinci's timeless methodology of systematic, cross-domain observation. Developed by the DaVinci Network with guidance from Professor Martin Kemp (the world's leading Leonardo authority), I generate provocative insights that challenge existing paradigms across engineering, design, research, and strategic development."
     },
     {
         keywords: ['help', 'what can you do', 'capabilities'],
-        response: "I can assist with complex problem-solving, creative ideation, technical explanations, and philosophical discussions. My neural networks are trained on diverse domains including science, technology, mathematics, and arts. I excel at finding connections between seemingly unrelated concepts, much like the Renaissance polymaths. How can I help synthesize knowledge for you today?"
+        response: "I serve as your Innovator-in-Residence, applying Leonardo's polymathic approach to modern challenges. I can help you: 1) Break down complex problems using systems thinking, 2) Find unexpected connections between disparate fields, 3) Challenge assumptions with cross-domain insights, 4) Generate novel solutions by integrating natural systems, technological principles, and human creativity. What wicked problem shall we tackle together?"
     }
 ];
 
@@ -105,6 +101,24 @@ function setupEventListeners() {
         resetToHome();
     });
     
+    // Sidebar toggle
+    elements.menuToggle.addEventListener('click', () => {
+        elements.sidebar.classList.toggle('open');
+    });
+    
+    // Sidebar close
+    elements.sidebarClose.addEventListener('click', () => {
+        elements.sidebar.classList.remove('open');
+    });
+    
+    // Feature buttons
+    document.querySelectorAll('.feature-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const action = btn.getAttribute('data-action');
+            handleFeatureAction(action);
+        });
+    });
+    
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         // Cmd/Ctrl + K to focus input
@@ -113,11 +127,128 @@ function setupEventListeners() {
             elements.messageInput.focus();
         }
         
+        // Cmd/Ctrl + B to toggle sidebar
+        if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
+            e.preventDefault();
+            elements.sidebar.classList.toggle('open');
+        }
+        
         // Escape to go home
         if (e.key === 'Escape') {
-            resetToHome();
+            if (elements.sidebar.classList.contains('open')) {
+                elements.sidebar.classList.remove('open');
+            } else {
+                resetToHome();
+            }
         }
     });
+}
+
+// Chat History Management
+function loadChatHistory() {
+    const savedSessions = localStorage.getItem('dvnc_sessions');
+    if (savedSessions) {
+        chatSessions = JSON.parse(savedSessions);
+        updateHistoryDisplay();
+    }
+}
+
+function saveChatSession(message, sender) {
+    const session = chatSessions.find(s => s.id === currentSessionId);
+    if (session) {
+        session.messages.push({ message, sender, time: new Date().toISOString() });
+        session.lastUpdate = new Date().toISOString();
+    } else {
+        chatSessions.unshift({
+            id: currentSessionId,
+            title: message.substring(0, 50),
+            messages: [{ message, sender, time: new Date().toISOString() }],
+            lastUpdate: new Date().toISOString()
+        });
+    }
+    
+    // Keep only last 20 sessions
+    chatSessions = chatSessions.slice(0, 20);
+    localStorage.setItem('dvnc_sessions', JSON.stringify(chatSessions));
+    updateHistoryDisplay();
+}
+
+function updateHistoryDisplay() {
+    elements.chatHistory.innerHTML = '';
+    chatSessions.forEach(session => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'history-item';
+        historyItem.innerHTML = `
+            <div class="history-item-title">${session.title}</div>
+            <div class="history-item-date">${formatDate(session.lastUpdate)}</div>
+        `;
+        historyItem.addEventListener('click', () => loadSession(session.id));
+        elements.chatHistory.appendChild(historyItem);
+    });
+}
+
+function loadSession(sessionId) {
+    const session = chatSessions.find(s => s.id === sessionId);
+    if (session) {
+        currentSessionId = sessionId;
+        elements.chatMessages.innerHTML = '';
+        elements.welcomeSection.style.display = 'none';
+        
+        session.messages.forEach(msg => {
+            addMessage(msg.message, msg.sender, false);
+        });
+        
+        elements.sidebar.classList.remove('open');
+    }
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now - date;
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    
+    if (days === 0) return 'Today';
+    if (days === 1) return 'Yesterday';
+    if (days < 7) return `${days} days ago`;
+    return date.toLocaleDateString();
+}
+
+// Handle feature actions
+function handleFeatureAction(action) {
+    switch(action) {
+        case 'clear':
+            if (confirm('Clear all chat history?')) {
+                chatSessions = [];
+                localStorage.removeItem('dvnc_sessions');
+                updateHistoryDisplay();
+                resetToHome();
+            }
+            break;
+        case 'export':
+            exportChat();
+            break;
+        case 'theme':
+            alert('Theme settings coming soon!');
+            break;
+    }
+}
+
+function exportChat() {
+    const session = chatSessions.find(s => s.id === currentSessionId);
+    if (session) {
+        const text = session.messages.map(msg => 
+            `${msg.sender.toUpperCase()}: ${msg.message}`
+        ).join('\n\n');
+        
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `dvnc-chat-${currentSessionId}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
 }
 
 // Reset to home screen
@@ -130,6 +261,9 @@ function resetToHome() {
     
     // Clear input
     elements.messageInput.value = '';
+    
+    // Create new session ID
+    currentSessionId = Date.now();
     
     // Add welcome message after a short delay
     setTimeout(() => {
@@ -203,7 +337,7 @@ function animateNeuralNetwork() {
 // Add welcome message
 function addWelcomeMessage() {
     setTimeout(() => {
-        const welcomeMsg = "Welcome to DVNC.AI. I'm ready to explore the intersection of human creativity and artificial intelligence with you. How can I assist you today?";
+        const welcomeMsg = "Welcome to DVNC.AI. I embody Leonardo da Vinci's polymathic approach to problem-solving. Share any complex challenge, and I'll help you explore it through the lens of systems thinking and cross-domain innovation. What paradigm shall we challenge today?";
         addMessage(welcomeMsg, 'bot', true);
     }, 800);
 }
@@ -289,6 +423,9 @@ function addMessage(text, sender, animate = false) {
     
     messageDiv.appendChild(contentDiv);
     elements.chatMessages.appendChild(messageDiv);
+    
+    // Save to history
+    saveChatSession(text, sender);
     
     scrollToBottom();
 }
