@@ -67,7 +67,7 @@ body {
     padding: 0;
 }
 
-/* Liquid Canvas Background */
+/* Liquid Canvas Background - More Visible */
 #liquidCanvas {
     position: fixed;
     top: 0;
@@ -75,7 +75,7 @@ body {
     width: 100%;
     height: 100%;
     z-index: 0;
-    opacity: 0.1;
+    opacity: 0.4;
     pointer-events: none;
 }
 
@@ -345,7 +345,7 @@ body {
 /* Liquid Features */
 .liquid-features {
     display: flex;
-    gap: 24px;
+    gap: 32px;
     padding: 16px;
 }
 
@@ -353,19 +353,37 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     position: relative;
 }
 
 .feature-bubble {
-    width: 44px;
-    height: 44px;
+    width: 56px;
+    height: 56px;
     background: var(--bg-surface);
-    border: 1px solid var(--border);
-    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     animation: bubble-float 6s ease-in-out infinite;
     animation-delay: calc(var(--j, 0) * 0.5s);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-md);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--primary);
+}
+
+.feature-bubble:hover {
+    transform: translateY(-12px) scale(1.1);
+    box-shadow: var(--shadow-lg);
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.feature-bubble svg {
+    width: 28px;
+    height: 28px;
 }
 
 .liquid-feature:nth-child(1) .feature-bubble { --j: 0; }
@@ -373,8 +391,10 @@ body {
 .liquid-feature:nth-child(3) .feature-bubble { --j: 2; }
 
 @keyframes bubble-float {
-    0%, 100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-8px) scale(1.05); }
+    0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+    25% { transform: translateY(-6px) scale(1.02) rotate(-2deg); }
+    50% { transform: translateY(-8px) scale(1.05) rotate(0deg); }
+    75% { transform: translateY(-4px) scale(1.02) rotate(2deg); }
 }
 
 .liquid-feature span {
@@ -382,7 +402,9 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     color: var(--text-secondary);
-    font-weight: 500;
+    font-weight: 600;
+    text-align: center;
+    max-width: 100px;
 }
 
 /* Chat Messages */
