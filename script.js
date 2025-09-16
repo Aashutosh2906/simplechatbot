@@ -1,102 +1,83 @@
-// Leonardo Da Vinci Futuristic Chatbot Script
+// DVNC.AI - Neural Intelligence Chatbot Script
 
 // Configuration
 const CONFIG = {
-    typingDelay: 50,
-    thinkingTime: 1500,
-    annotationInterval: 8000,
-    goldenRatio: 1.618,
-    apiEndpoint: '/api/chat', // Replace with your API endpoint if needed
-    useLocalResponses: true // Set to false when you have a real backend
+    typingDelay: 20, // Faster streaming
+    thinkingTime: 800, // Reduced thinking time
+    apiEndpoint: '/api/chat',
+    useLocalResponses: true,
+    particleCount: 50,
+    connectionDistance: 150
 };
 
-// Renaissance-themed responses (for demo/fallback)
-const LEONARDO_RESPONSES = [
+// AI-themed responses
+const DVNC_RESPONSES = [
     {
-        keywords: ['golden ratio', 'phi', 'mathematics'],
-        response: "Ah, the divine proportion! φ = 1.618... This mathematical constant appears throughout nature - from the spiral of shells to the arrangement of flower petals. In my designs, I use this ratio to achieve perfect harmony. The human body itself follows these proportions, as shown in my Vitruvian Man. This is not mere coincidence, but evidence of the underlying mathematical order of creation."
+        keywords: ['quantum', 'computing'],
+        response: "Quantum computing leverages quantum mechanical phenomena like superposition and entanglement to process information exponentially faster than classical computers. Instead of bits (0 or 1), quantum computers use qubits that can exist in multiple states simultaneously. This enables solving complex problems in cryptography, drug discovery, and optimization that would take classical computers millennia to solve."
     },
     {
-        keywords: ['art', 'painting', 'mona lisa'],
-        response: "Art is the supreme form of human expression, where science and beauty converge. The Mona Lisa's smile captures not just a moment, but the eternal mystery of human emotion. Through sfumato - the delicate blending of colors and tones - we can represent the softness of flesh and the atmosphere itself. Remember: painting is poetry that is seen rather than felt."
+        keywords: ['neural', 'network', 'networks'],
+        response: "Neural networks are computational models inspired by the human brain's structure. They consist of interconnected nodes (neurons) organized in layers that process and transform data. Through training on vast datasets, these networks learn to recognize patterns, make predictions, and solve complex problems. Modern deep learning architectures power everything from image recognition to natural language processing."
     },
     {
-        keywords: ['innovation', 'invention', 'future'],
-        response: "Innovation springs from observing nature with curious eyes. My flying machines were inspired by birds, my hydraulic systems by rivers. The future belongs to those who can see beyond the present limitations. I envision cities with multiple levels, machines that harness the power of water and wind, and devices that extend human capabilities. The only limit is imagination coupled with understanding."
+        keywords: ['golden ratio', 'phi', '1.618'],
+        response: "The golden ratio (φ = 1.618...) is a mathematical constant that appears throughout nature and art. From the spiral of galaxies to the proportions of the human face, this ratio creates aesthetically pleasing and harmonious designs. In my neural architecture, I apply these principles to create balanced and intuitive interactions between human and artificial intelligence."
     },
     {
-        keywords: ['wisdom', 'knowledge', 'learning'],
-        response: "Learning never exhausts the mind, rather it ignites it with endless possibility. I have been impressed with the urgency of doing - knowing is not enough, we must apply; willing is not enough, we must do. Obstacles cannot crush me; every obstacle yields to stern resolve. The noblest pleasure is the joy of understanding."
+        keywords: ['future', 'ai', 'artificial intelligence'],
+        response: "The future of AI extends beyond mere computation into genuine collaboration with human intelligence. We're moving toward systems that understand context, emotion, and nuance. Quantum-enhanced neural networks, neuromorphic computing, and bio-inspired algorithms will create AI that augments human creativity rather than replacing it. The convergence of these technologies will unlock solutions to humanity's greatest challenges."
     },
     {
-        keywords: ['science', 'anatomy', 'nature'],
-        response: "To understand the human body, I performed over 30 dissections, revealing the miraculous machinery within. Each organ, each muscle, is perfectly designed for its function. Nature is the supreme teacher - her laws govern all things. The eye, which is called the window of the soul, is the principal means by which understanding may most fully appreciate the infinite works of nature."
+        keywords: ['hello', 'hi', 'hey'],
+        response: "Hello! I'm DVNC.AI, a neural intelligence interface bridging Renaissance wisdom with modern AI. My architecture combines pattern recognition, natural language processing, and knowledge synthesis to assist you. What would you like to explore today?"
     },
     {
-        keywords: ['hello', 'hi', 'greetings'],
-        response: "Greetings, curious soul! Like the opening of a flower to the morning sun, our conversation begins. I am here to share the wisdom of art, science, and the eternal dance between them. What mysteries of the universe shall we explore together today?"
-    },
-    {
-        keywords: ['who are you', 'leonardo', 'da vinci'],
-        response: "I am Leonardo, a student of all that can be known. Artist, scientist, engineer - these are but facets of the same crystal of understanding. Born in Vinci, I have dedicated my life to unraveling nature's secrets and creating beauty that transcends time. Through this digital incarnation, my spirit of inquiry lives on. How may I illuminate your path today?"
+        keywords: ['who are you', 'what are you', 'dvnc'],
+        response: "I am DVNC.AI - a neural intelligence system inspired by Leonardo da Vinci's multidisciplinary genius. My architecture integrates advanced language models with principles from art, science, and mathematics. I process information through interconnected neural pathways, similar to how da Vinci connected diverse fields of knowledge to create revolutionary insights."
     },
     {
         keywords: ['help', 'what can you do', 'capabilities'],
-        response: "I can guide you through the realms of art and science, philosophy and innovation. Ask me about the golden ratio that governs beauty, the principles of flight I discovered centuries before they took to the skies, or the intersection of anatomy and art. I can inspire your creativity, explain the mechanics of nature, or discuss the profound connections between all things. What sparks your curiosity?"
+        response: "I can assist with complex problem-solving, creative ideation, technical explanations, and philosophical discussions. My neural networks are trained on diverse domains including science, technology, mathematics, and arts. I excel at finding connections between seemingly unrelated concepts, much like the Renaissance polymaths. How can I help synthesize knowledge for you today?"
     }
 ];
 
-// Latin phrases for floating annotations
-const ANNOTATIONS = [
-    "Ostinato rigore",
-    "Dimmi dimmi",
-    "Saper vedere",
-    "La pittura è mentale",
-    "Ogni nostra cognizione",
-    "Principia della scienza",
-    "Arte e natura",
-    "Divina proportione",
-    "Mechanics naturae",
-    "Corpus perfectum"
-];
-
 // DOM Elements
-const elements = {
-    chatMessages: null,
-    messageInput: null,
-    sendButton: null,
-    typingIndicator: null,
-    welcomeSection: null,
-    quickActions: null,
-    annotationsContainer: null
-};
+let elements = {};
 
-// Initialize the application
+// Neural Network Background Variables
+let canvas, ctx;
+let particles = [];
+let animationId;
+
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
     initializeElements();
     setupEventListeners();
-    setupAnimations();
-    startAnnotations();
+    initNeuralBackground();
     addWelcomeMessage();
 });
 
 // Initialize DOM elements
 function initializeElements() {
-    elements.chatMessages = document.getElementById('chatMessages');
-    elements.messageInput = document.getElementById('messageInput');
-    elements.sendButton = document.getElementById('sendButton');
-    elements.typingIndicator = document.getElementById('typingIndicator');
-    elements.welcomeSection = document.getElementById('welcomeSection');
-    elements.quickActions = document.querySelectorAll('.quick-action');
-    elements.annotationsContainer = document.querySelector('.annotations-container');
+    elements = {
+        chatMessages: document.getElementById('chatMessages'),
+        messageInput: document.getElementById('messageInput'),
+        sendButton: document.getElementById('sendButton'),
+        typingIndicator: document.getElementById('typingIndicator'),
+        welcomeSection: document.getElementById('welcomeSection'),
+        quickActions: document.querySelectorAll('.quick-action'),
+        logoHome: document.getElementById('logoHome'),
+        resetBtn: document.getElementById('resetBtn')
+    };
 }
 
 // Setup event listeners
 function setupEventListeners() {
-    // Send button click
+    // Send message
     elements.sendButton.addEventListener('click', sendMessage);
     
-    // Enter key press
+    // Enter key
     elements.messageInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -104,7 +85,7 @@ function setupEventListeners() {
         }
     });
     
-    // Quick action buttons
+    // Quick actions
     elements.quickActions.forEach(button => {
         button.addEventListener('click', () => {
             const message = button.getAttribute('data-message');
@@ -113,69 +94,118 @@ function setupEventListeners() {
         });
     });
     
-    // Input focus effects
-    elements.messageInput.addEventListener('focus', () => {
-        elements.messageInput.parentElement.classList.add('focused');
+    // Logo/Home button click - return to welcome screen
+    elements.logoHome.addEventListener('click', (e) => {
+        e.preventDefault();
+        resetToHome();
     });
     
-    elements.messageInput.addEventListener('blur', () => {
-        elements.messageInput.parentElement.classList.remove('focused');
+    // Reset button
+    elements.resetBtn.addEventListener('click', () => {
+        resetToHome();
     });
-}
-
-// Setup animations
-function setupAnimations() {
-    // Parallax effect on mouse move
-    document.addEventListener('mousemove', (e) => {
-        const x = e.clientX / window.innerWidth;
-        const y = e.clientY / window.innerHeight;
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        // Cmd/Ctrl + K to focus input
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+            e.preventDefault();
+            elements.messageInput.focus();
+        }
         
-        const vitruvian = document.querySelector('.vitruvian-bg');
-        if (vitruvian) {
-            const translateX = (x - 0.5) * 20;
-            const translateY = (y - 0.5) * 20;
-            vitruvian.style.transform = `translate(calc(-50% + ${translateX}px), calc(-50% + ${translateY}px))`;
+        // Escape to go home
+        if (e.key === 'Escape') {
+            resetToHome();
         }
     });
 }
 
-// Start floating annotations
-function startAnnotations() {
-    setInterval(() => {
-        if (Math.random() > 0.7) {
-            createFloatingAnnotation();
-        }
-    }, CONFIG.annotationInterval);
+// Reset to home screen
+function resetToHome() {
+    // Clear chat messages
+    elements.chatMessages.innerHTML = '';
+    
+    // Show welcome section
+    elements.welcomeSection.style.display = 'flex';
+    
+    // Clear input
+    elements.messageInput.value = '';
+    
+    // Add welcome message after a short delay
+    setTimeout(() => {
+        addWelcomeMessage();
+    }, 500);
 }
 
-// Create floating annotation
-function createFloatingAnnotation() {
-    const annotation = document.createElement('div');
-    annotation.className = 'annotation';
-    annotation.textContent = ANNOTATIONS[Math.floor(Math.random() * ANNOTATIONS.length)];
+// Neural Network Background
+function initNeuralBackground() {
+    canvas = document.getElementById('neuralCanvas');
+    ctx = canvas.getContext('2d');
     
-    const x = Math.random() * 80 + 10;
-    const y = Math.random() * 80 + 10;
-    const rotation = Math.random() * 10 - 5;
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
     
-    annotation.style.left = `${x}%`;
-    annotation.style.top = `${y}%`;
-    annotation.style.transform = `rotate(${rotation}deg)`;
+    // Create particles
+    for (let i = 0; i < CONFIG.particleCount; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: (Math.random() - 0.5) * 0.5,
+            radius: Math.random() * 2 + 1
+        });
+    }
     
-    elements.annotationsContainer.appendChild(annotation);
+    animateNeuralNetwork();
+}
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+function animateNeuralNetwork() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Remove after animation
-    setTimeout(() => {
-        annotation.remove();
-    }, 10000);
+    // Update and draw particles
+    particles.forEach((particle, i) => {
+        // Update position
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+        
+        // Bounce off walls
+        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
+        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
+        
+        // Draw particle
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0, 212, 255, 0.5)';
+        ctx.fill();
+        
+        // Draw connections
+        particles.slice(i + 1).forEach(other => {
+            const distance = Math.hypot(particle.x - other.x, particle.y - other.y);
+            if (distance < CONFIG.connectionDistance) {
+                ctx.beginPath();
+                ctx.moveTo(particle.x, particle.y);
+                ctx.lineTo(other.x, other.y);
+                ctx.strokeStyle = `rgba(123, 47, 255, ${0.2 * (1 - distance / CONFIG.connectionDistance)})`;
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+            }
+        });
+    });
+    
+    animationId = requestAnimationFrame(animateNeuralNetwork);
 }
 
 // Add welcome message
 function addWelcomeMessage() {
     setTimeout(() => {
-        const welcomeMsg = "Welcome, seeker of knowledge! I am Leonardo, bridging centuries to converse with you through this digital canvas. How may I illuminate your understanding today?";
+        const welcomeMsg = "Welcome to DVNC.AI. I'm ready to explore the intersection of human creativity and artificial intelligence with you. How can I assist you today?";
         addMessage(welcomeMsg, 'bot', true);
-    }, 1000);
+    }, 800);
 }
 
 // Send message
@@ -183,7 +213,7 @@ async function sendMessage() {
     const message = elements.messageInput.value.trim();
     if (!message) return;
     
-    // Hide welcome section on first message
+    // Hide welcome section
     if (elements.welcomeSection.style.display !== 'none') {
         elements.welcomeSection.style.display = 'none';
     }
@@ -191,10 +221,8 @@ async function sendMessage() {
     // Add user message
     addMessage(message, 'user');
     
-    // Clear input and add ripple effect
+    // Clear input
     elements.messageInput.value = '';
-    elements.sendButton.classList.add('sending');
-    setTimeout(() => elements.sendButton.classList.remove('sending'), 600);
     
     // Show typing indicator
     showTypingIndicator();
@@ -202,24 +230,20 @@ async function sendMessage() {
     // Get response
     setTimeout(async () => {
         hideTypingIndicator();
-        const response = await getLeonardoResponse(message);
+        const response = await getDVNCResponse(message);
         addMessage(response, 'bot', true);
     }, CONFIG.thinkingTime);
 }
 
-// Get Leonardo's response
-async function getLeonardoResponse(message) {
+// Get DVNC response
+async function getDVNCResponse(message) {
     if (CONFIG.useLocalResponses) {
-        // Use local responses for demo
         return getLocalResponse(message);
     } else {
-        // Call your actual API
         try {
             const response = await fetch(CONFIG.apiEndpoint, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message })
             });
             
@@ -234,19 +258,18 @@ async function getLeonardoResponse(message) {
     }
 }
 
-// Get local response based on keywords
+// Get local response
 function getLocalResponse(message) {
     const lowercaseMessage = message.toLowerCase();
     
-    // Find matching response based on keywords
-    for (const item of LEONARDO_RESPONSES) {
+    for (const item of DVNC_RESPONSES) {
         if (item.keywords.some(keyword => lowercaseMessage.includes(keyword))) {
             return item.response;
         }
     }
     
     // Default response
-    return "Fascinating inquiry! Like the interconnected gears of my mechanical designs, every question leads to deeper understanding. The answer you seek lies at the intersection of observation and imagination. Consider how nature herself might solve this puzzle - for she is the supreme teacher. What patterns do you observe? What connections emerge when you look with the eyes of both artist and scientist?";
+    return "That's an intriguing query. My neural networks are processing multiple dimensions of this question. From a computational perspective, this touches on pattern recognition and information synthesis. The solution likely involves connecting disparate data points through non-linear relationships. What specific aspect would you like me to analyze deeper?";
 }
 
 // Add message to chat
@@ -258,126 +281,86 @@ function addMessage(text, sender, animate = false) {
     contentDiv.className = 'message-content';
     
     if (animate && sender === 'bot') {
-        // Typing animation for bot messages
+        // Streaming animation for bot messages
         typeMessage(contentDiv, text);
     } else {
         contentDiv.textContent = text;
     }
     
-    // Add timestamp
-    const timeDiv = document.createElement('div');
-    timeDiv.className = 'message-time';
-    timeDiv.textContent = getCurrentTime();
-    contentDiv.appendChild(timeDiv);
-    
     messageDiv.appendChild(contentDiv);
     elements.chatMessages.appendChild(messageDiv);
     
-    // Scroll to bottom
     scrollToBottom();
 }
 
-// Type message with animation
+// Type message with streaming effect (faster)
 function typeMessage(element, text) {
     let index = 0;
     element.textContent = '';
     
     const typeInterval = setInterval(() => {
         if (index < text.length) {
-            element.textContent += text[index];
-            index++;
+            // Add multiple characters at once for faster streaming
+            const charsToAdd = text.substr(index, 3);
+            element.textContent += charsToAdd;
+            index += 3;
         } else {
             clearInterval(typeInterval);
-            // Add timestamp after typing completes
-            const timeDiv = document.createElement('div');
-            timeDiv.className = 'message-time';
-            timeDiv.textContent = getCurrentTime();
-            element.appendChild(timeDiv);
         }
         scrollToBottom();
     }, CONFIG.typingDelay);
 }
 
-// Show typing indicator
+// Typing indicator
 function showTypingIndicator() {
     elements.typingIndicator.style.display = 'flex';
     scrollToBottom();
 }
 
-// Hide typing indicator
 function hideTypingIndicator() {
     elements.typingIndicator.style.display = 'none';
 }
 
-// Scroll to bottom of chat
+// Scroll to bottom
 function scrollToBottom() {
     elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
 }
 
-// Get current time
-function getCurrentTime() {
-    const now = new Date();
-    const hours = now.getHours();
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-    const period = hours >= 12 ? 'PM' : 'AM';
-    const displayHours = hours % 12 || 12;
-    return `${displayHours}:${minutes} ${period}`;
-}
+// Visual feedback on send button click
+elements.sendButton?.addEventListener('click', function() {
+    this.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+        this.style.transform = '';
+    }, 100);
+});
 
-// Add keyboard shortcuts
-document.addEventListener('keydown', (e) => {
-    // Cmd/Ctrl + K to focus input
-    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        elements.messageInput.focus();
-    }
+// Add hover effect to particles near mouse
+document.addEventListener('mousemove', (e) => {
+    if (!canvas) return;
     
-    // Escape to clear input
-    if (e.key === 'Escape') {
-        elements.messageInput.value = '';
-        elements.messageInput.blur();
-    }
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    particles.forEach(particle => {
+        const distance = Math.hypot(particle.x - mouseX, particle.y - mouseY);
+        if (distance < 100) {
+            const angle = Math.atan2(particle.y - mouseY, particle.x - mouseX);
+            particle.vx += Math.cos(angle) * 0.1;
+            particle.vy += Math.sin(angle) * 0.1;
+            
+            // Limit velocity
+            particle.vx = Math.max(-2, Math.min(2, particle.vx));
+            particle.vy = Math.max(-2, Math.min(2, particle.vy));
+        }
+    });
 });
 
-// Add visual feedback for voice (future feature)
-function initVoiceRecognition() {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        // Voice recognition can be added here
-        console.log('Voice recognition available');
-    }
-}
-
-// Golden ratio calculations for dynamic layouts
-function applyGoldenRatio() {
-    const width = window.innerWidth;
-    const goldenWidth = Math.floor(width / CONFIG.goldenRatio);
-    // Apply golden ratio to layout if needed
-}
-
-// Window resize handler
-window.addEventListener('resize', () => {
-    applyGoldenRatio();
-});
-
-// Add pulse effect to logo
-setInterval(() => {
-    const logo = document.querySelector('.logo');
-    if (logo) {
-        logo.style.animation = 'none';
-        setTimeout(() => {
-            logo.style.animation = '';
-        }, 10);
-    }
-}, 10000);
-
-// Export for potential API integration
-window.LeonardoChatbot = {
+// Export for API integration
+window.DVNC = {
     sendMessage,
     addMessage,
-    clearChat: () => {
-        elements.chatMessages.innerHTML = '';
-        elements.welcomeSection.style.display = 'block';
-    },
+    resetToHome,
     setApiEndpoint: (endpoint) => {
         CONFIG.apiEndpoint = endpoint;
         CONFIG.useLocalResponses = false;
